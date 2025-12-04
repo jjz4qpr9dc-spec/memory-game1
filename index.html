@@ -1,36 +1,13 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Игра Память 4x4</title>
-<style>
-  body { font-family: Arial, sans-serif; text-align: center; background: #f0f0f0; }
-  h1 { margin-top: 20px; }
-  #game { display: grid; grid-template-columns: repeat(4, 60px); grid-gap: 10px; justify-content: center; margin-top: 20px; }
-  .card { width: 60px; height: 60px; background: #fff; display: flex; align-items: center; justify-content: center; font-size: 30px; cursor: pointer; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.3); }
-  .matched { background: #8df0a3; cursor: default; }
-  #score { margin-top: 20px; font-size: 18px; }
-  #winVideo { margin-top: 20px; display: none; }
-</style>
-</head>
-<body>
-
-<h1>🎮 Память 4x4</h1>
-<div id="game"></div>
-<div id="score">Очки: 0</div>
-
-<video id="winVideo" width="240" autoplay>
-  <source src="https://www.w3schools.com/html/mov_bbb.mp4" type="video/mp4">
-</video>
-
 <script>
 const EMOJIS = ['🍎','🍌','🍇','🍉','🍒','🥝','🍍','🍑'];
 let board = [...EMOJIS, ...EMOJIS];
 board.sort(() => Math.random() - 0.5);
 
 let firstChoice = null;
+let secondChoice = null;
+let lockBoard = false;
 let score = 0;
+
 const gameDiv = document.getElementById('game');
 const scoreDiv = document.getElementById('score');
 const winVideo = document.getElementById('winVideo');
@@ -47,38 +24,50 @@ function createBoard() {
 }
 
 function handleClick(e) {
+  if (lockBoard) return;
+
   const card = e.currentTarget;
   const index = card.dataset.index;
-  if (card.classList.contains('matched') || card.textContent !== '❓') return;
+
+  if (card.textContent !== '❓' || card.classList.contains('matched')) return;
 
   card.textContent = board[index];
 
-  if (firstChoice === null) {
+  if (!firstChoice) {
     firstChoice = card;
-  } else {
-    const secondChoice = card;
-    if (board[firstChoice.dataset.index] === board[secondChoice.dataset.index]) {
-      firstChoice.classList.add('matched');
-      secondChoice.classList.add('matched');
-      score++;
-      scoreDiv.textContent = `Очки: ${score}`; // исправлено
-      if (score === 8) {
-        setTimeout(() => {
-          winVideo.style.display = 'block';
-        }, 500);
-      }
-    } else {
-      setTimeout(() => {
-        firstChoice.textContent = '❓';
-        secondChoice.textContent = '❓';
-      }, 1000);
-    }
-    firstChoice = null;
+    return;
   }
+
+  secondChoice = card;
+  lockBoard = true;
+
+  // Проверка совпадения
+  if (board[firstChoice.dataset.index] === board[secondChoice.dataset.index]) {
+    firstChoice.classList.add('matched');
+    secondChoice.classList.add('matched');
+    score++;
+    scoreDiv.textContent = `Очки: ${score}`;
+    resetChoices();
+
+    if (score === 8) {
+      winVideo.style.display = 'block';
+      winVideo.play();
+    }
+  } else {
+    // Закрыть карты через 1 секунду
+    setTimeout(() => {
+      firstChoice.textContent = '❓';
+      secondChoice.textContent = '❓';
+      resetChoices();
+    }, 1000);
+  }
+}
+
+function resetChoices() {
+  firstChoice = null;
+  secondChoice = null;
+  lockBoard = false;
 }
 
 createBoard();
 </script>
-
-</body>
-</html>
