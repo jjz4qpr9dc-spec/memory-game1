@@ -61,7 +61,7 @@ function handleClick(e) {
       firstChoice.classList.add('matched');
       secondChoice.classList.add('matched');
       score++;
-      scoreDiv.textContent = Очки: ${score};
+      scoreDiv.textContent = `Очки: ${score}`; // исправлено
       if (score === 8) {
         setTimeout(() => {
           winVideo.style.display = 'block';
