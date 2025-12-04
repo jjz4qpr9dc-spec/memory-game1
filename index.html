@@ -1,3 +1,29 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<title>Memory Game</title>
+<style>
+  body { font-family: Arial; text-align: center; background: #f0f0f0; }
+  #game { display: grid; grid-template-columns: repeat(4, 80px); gap: 10px; justify-content: center; margin-top: 20px; }
+  .card {
+    width: 80px; height: 80px; background: white; display: flex;
+    justify-content: center; align-items: center; font-size: 40px;
+    cursor: pointer; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    user-select: none;
+  }
+  .matched { background: lightgreen; cursor: default; }
+  #winVideo { display: none; margin-top: 20px; width: 300px; }
+</style>
+</head>
+<body>
+
+<h1>Memory Game</h1>
+<div id="score">Очки: 0</div>
+<div id="game"></div>
+
+<video id="winVideo" src="https://www.w3schools.com/html/mov_bbb.mp4" controls></video>
+
 <script>
 const EMOJIS = ['🍎','🍌','🍇','🍉','🍒','🥝','🍍','🍑'];
 let board = [...EMOJIS, ...EMOJIS];
@@ -41,7 +67,6 @@ function handleClick(e) {
   secondChoice = card;
   lockBoard = true;
 
-  // Проверка совпадения
   if (board[firstChoice.dataset.index] === board[secondChoice.dataset.index]) {
     firstChoice.classList.add('matched');
     secondChoice.classList.add('matched');
@@ -54,7 +79,6 @@ function handleClick(e) {
       winVideo.play();
     }
   } else {
-    // Закрыть карты через 1 секунду
     setTimeout(() => {
       firstChoice.textContent = '❓';
       secondChoice.textContent = '❓';
@@ -71,3 +95,6 @@ function resetChoices() {
 
 createBoard();
 </script>
+
+</body>
+</html>
